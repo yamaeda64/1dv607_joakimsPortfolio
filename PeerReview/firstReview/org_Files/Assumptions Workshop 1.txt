@@ -1,0 +1,4 @@
+Assumptions _ Assignment 1 - Itration 1
+
+Workshop 1
+- The assumption is that the Yach Club kept a boat details log for all boats.
