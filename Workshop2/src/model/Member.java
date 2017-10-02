@@ -12,13 +12,14 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.ArrayList;
 
 /**
- * This is a member class to store all details about the members
+ * This is a member class to store all important details about a members
+ * the fields are stored as propertys, i.e. StringProperty instead of String
+ * to keep compatibility with TableView.
+ * Also an ObservableList<Boat> is used instead of a simple Array of Boats for the
+ * same reason.
  */
 public class Member
 {
-    private static int counter;         // TODO, this probably get weird when restarting program
-                                        // maybe set to highest member id +1 at start?
-    
     private StringProperty firstName;
   
     private StringProperty lastName;
@@ -29,26 +30,29 @@ public class Member
  
     private SimpleIntegerProperty boatCount;
 
-        private ObservableList<Boat> boatList;
-    // END TEMPORARY!!!!
+    private ObservableList<Boat> boatList;
+   
     /**
-     * Constructor that adds up to member counter and assigns the current value to memberID
+     * Constructor that initialize the new Member Object
      */
     public Member()
     {
-        // TODO THIS IS TEMPORARY!!!
         
         boatList = FXCollections.observableList(new ArrayList<>());
-
-        // END TEMPORARY!!!!
         this.firstName = new SimpleStringProperty();
         this.lastName = new SimpleStringProperty();
         this.personalNumber = new SimpleStringProperty();
         this.memberID = new SimpleIntegerProperty();
         this.boatCount = new SimpleIntegerProperty();
-        memberID.setValue(++counter);
+        
     }
     
+    /**
+     * Adds a Boat to the member. Arguments for the boat creation need to be passed in.
+     * @param boatType  type of boat
+     * @param length length in centimeters
+     * @param boatID not required argument, can be used if boat has a registration number
+     */
     public void addBoat(model.BoatType boatType, int length, String boatID)
     {
         Boat boat = new Boat();
@@ -56,23 +60,31 @@ public class Member
         boat.setBoatID(boatID);
         boat.setLength(length);
         boatCount.setValue(boatCount.get() + 1);
-        
-        //TODO, TEMPORARY
         boatList.add(boat);
     }
     
+    /**
+     * Deletes a boat from a Members collection of Boats.
+     * @param boat the boat that are to be deleted.
+     */
     public void deleteBoat(Boat boat)
     {
         boatList.remove(boat);
+        boatCount.setValue(boatList.size());
     }
     
+    /**
+     * Edits a members fields by the input of the arguments
+     * @param firstName a Members first name (Should only be characters)
+     * @param lastName a Members family name (Should only be characters)
+     * @param personalID A Members birthday and personal numbers.
+     */
     public void editMember(String firstName, String lastName, String personalID)
     {
         this.firstName.setValue(firstName);
         this.lastName.setValue(lastName);
         this.personalNumber.setValue(personalID);
     }
-
     
     // Getters & Setters
     

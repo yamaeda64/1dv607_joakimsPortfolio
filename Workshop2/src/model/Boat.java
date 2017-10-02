@@ -11,7 +11,12 @@ public class Boat
     private int length;     // length in cm
     private String boatID;
     
-    
+    /**
+     * Edit an existing boat with input arguments as the new data.
+     * @param boatType  what type of boat
+     * @param length length in centimeters
+     * @param boatID an not required field to add if the boat has a registrationNumber
+     */
    public void editBoat(BoatType boatType, int length, String boatID)
    {
        this.boatType = boatType;

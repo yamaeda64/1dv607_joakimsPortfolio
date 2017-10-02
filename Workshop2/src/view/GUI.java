@@ -1,6 +1,4 @@
-package view;/**
- * Created by joakimbergqvist on 2017-09-23.
- */
+package view;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,24 +12,36 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import model.Member;
 
-public class GUI implements View
+/**
+ *  GUI Class is the base of the View package for the Happy Pirate Boat Club.
+ *  This Class hold the GUI for the main page of the system where you can
+ *  view members. But there is also buttons to handle changes in the program
+ *  and a save button to export the list of members and boats.
+ */
+
+public class GUI implements MemberCRUD, BoatClubMainView
 {
     private Member selectedMember;
-    model.MemberRegister memberRegister;
-    VBox mainPane;
-    TableView<Member> tableView;
-    ToggleGroup radioToggle;
-    RadioButton standardRadio;
-    RadioButton verboseRadio;
+    private model.MemberRegister memberRegister;
+    private VBox mainPane;
+    private TableView<Member> tableView;
+    private ToggleGroup radioToggle;
+    private RadioButton standardRadio;
+    private RadioButton verboseRadio;
     
+    /**
+     * Constructor that saves the arguments in fields before calling the mainMenu
+     * @param memberRegister class that holds the collection of members
+     * @param pane the main pane where all graphic should be added on to be visible to user.
+     */
     public GUI(model.MemberRegister memberRegister, VBox pane)
     {
         this.memberRegister = memberRegister;
-        
         this.mainPane = pane;
         mainMenu();
     }
     
+    @Override
     public void mainMenu()
     {
         // creating elements
@@ -48,7 +58,7 @@ public class GUI implements View
         Button editMemberButton = new Button("Edit Member");
         Button deleteMemberButton = new Button("Delete Member");
         Button saveButton = new Button("SAVE");
-        Button helpButton = new Button("Help");
+        //Button helpButton = new Button("Help");   // help is replaced by a readme file
     
         // Making radiobuttons toggle
         standardRadio.setToggleGroup(radioToggle);
@@ -70,7 +80,7 @@ public class GUI implements View
         buttonPane.getChildren().add(addMemberButton);
         buttonPane.getChildren().add(editMemberButton);
         buttonPane.getChildren().add(deleteMemberButton);
-        buttonPane.getChildren().add(helpButton);
+     //   buttonPane.getChildren().add(helpButton);
         buttonPane.getChildren().add(saveButton);
         
         // position the elements in the view
@@ -115,52 +125,36 @@ public class GUI implements View
                 new PropertyValueFactory<Member, String>("lastName")
         );
     
-        TableColumn numOfBoats = new TableColumn("Boats");
-        numOfBoats.setCellValueFactory(
-                new PropertyValueFactory<Member, Integer>("boatCount")
+        TableColumn numOfBoatsCol = new TableColumn("Boats");
+        numOfBoatsCol.setCellValueFactory(
+                new PropertyValueFactory<Member, String>("boatCount")
         );
-        tableView.getColumns().addAll(memberIdCol, firstNameCol, lastNameCol, numOfBoats);
+        tableView.getColumns().addAll(memberIdCol, firstNameCol, lastNameCol, numOfBoatsCol);
+        
         final ContextMenu contextMenu = new ContextMenu();
         MenuItem editMember = new MenuItem("Edit Member");
         MenuItem deleteMember = new MenuItem("Delete Member");
         
         contextMenu.getItems().addAll(editMember,deleteMember);
         
-        
         tableView.setContextMenu(contextMenu);
-          //  TableColumn personalID = new TableColumn("Personal ID");
-          //  numOfBoats.setCellValueFactory(
-         //           new PropertyValueFactory<Member, String>("personalNumber")
-         //   );
-          //  tableView.getColumns().add(personalID);
-        
-    
         tableView.setItems(memberRegister.getMembers());
-        
-       
-//        tableView.getColumns().add((TableColumn<Member, String>) memberRegister.getMembers());
-       // stage.setScene(new Scene(group));
-       // stage.show();
-       
-        
         
         // Actions
         
-        addMemberButton.setOnAction((event) -> {
-            
-            AddMemberView addMemberView = new AddMemberView(memberRegister);
-            
+        addMemberButton.setOnAction((event) ->
+        {
+            addMember();
         });
         editMember.setOnAction(event ->
         {
-            EditMemberView editMemberView = new EditMemberView(selectedMember, memberRegister);
+            editMember();
         });
-    
         editMemberButton.setOnAction(event ->
         {
             if(selectedMember != null)
             {
-                EditMemberView editMemberView = new EditMemberView(selectedMember, memberRegister);
+                editMember();
             }
             else
             {
@@ -169,16 +163,19 @@ public class GUI implements View
         });
         deleteMember.setOnAction(event ->
         {
-            memberRegister.deleteMember(selectedMember);
+            deleteMember();
         });
         
-        deleteMemberButton.setOnAction(event -> {
-            memberRegister.deleteMember(selectedMember);
+        deleteMemberButton.setOnAction(event ->
+        {
+            if(selectedMember != null)
+            {
+                deleteMember();
+            }
         });
         
         saveButton.setOnAction(event-> {
-            memberRegister.exportXML(memberRegister);
-            
+           saveMembers();
         });
         
         tableView.setOnMouseClicked(event ->
@@ -187,96 +184,64 @@ public class GUI implements View
             {
                 selectedMember = tableView.getSelectionModel().getSelectedItem();
             }
-           
-        ;
         });
         
         standardRadio.setOnAction(event ->
         {
-            showStandardView();
+            showStandardView(firstNameCol);
         });
         
         verboseRadio.setOnAction(event ->
         {
-            showVerboseView();
+            showVerboseView(firstNameCol);
         });
-        
-        
-        
     }
-    // TableView
-    private void showVerboseView()
+    
+    @Override
+    public void showVerboseView(TableColumn firstNameCol)
     {
         TableColumn personalNumberCol = new TableColumn("Personal Number");
+        personalNumberCol.setId("personalNumber");
         personalNumberCol.setCellValueFactory(
                 new PropertyValueFactory<Member, String>("personalNumber")
         );
        tableView.getColumns().add(personalNumberCol);
-    }
     
-    private void showStandardView()
+        firstNameCol.setCellFactory(CustomTextFieldTableCell.forTableColumn()); // adds popup for boats,
+                                        // TODO, should be changed to numOfBoatsCol but since  the is integer
+                                        // TODO, that is some not yet solve issue.
+    }
+    @Override
+    public void showStandardView(TableColumn firstNameCol)
     {
         tableView.getColumns().remove(4);
-    }
-    
-    
-    @Override
-    public void showHelp()
-    {
+        // Removes the scrolldown of boats
         
-    }
-    
-    @Override
-    public void showNormalList()
-    {
-        
-    }
-    
-    @Override
-    public void showVerboseList()
-    {
-        
+        firstNameCol.setCellFactory(CustomTextFieldTableCell.revertTableColumn());
     }
     
     @Override
     public void addMember()
     {
-        
+        AddMemberView addMemberView = new AddMemberView(memberRegister);
     }
     
     @Override
     public void editMember()
     {
-        
+        EditMemberView editMemberView = new EditMemberView(selectedMember, memberRegister);
     }
     
     @Override
     public void deleteMember()
     {
-        
-    }
-    
-    @Override
-    public void addBoat()
-    {
-        
-    }
-    
-    @Override
-    public void editBoat()
-    {
-        
-    }
-    
-    @Override
-    public void deleteBoat()
-    {
-        
+        memberRegister.deleteMember(selectedMember);
+        selectedMember = null;
     }
     
     @Override
     public void saveMembers()
     {
-        
+        memberRegister.exportXML(memberRegister);
     }
 }

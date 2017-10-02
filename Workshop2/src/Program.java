@@ -8,7 +8,8 @@ import view.GUI;
 import javax.xml.bind.JAXBException;
 
 /**
- * Created by joakimbergqvist on 2017-09-12.
+ * The main program file that executes the Application and creates the needed classes from
+ * both view package and model package to be able to run the program
  */
 public class Program extends Application
 {
@@ -16,7 +17,6 @@ public class Program extends Application
     {
         launch();
     }
-    
     
     @Override
     public void start(Stage primaryStage) throws Exception
@@ -29,8 +29,7 @@ public class Program extends Application
         }
         catch(Exception e)
         {
-            
-            // TODO, write error handling
+            // TODO, write error handling (user should be informed if the xml wasn't loaded)
         }
         if(memberRegister == null)
         {
@@ -43,4 +42,3 @@ public class Program extends Application
         primaryStage.show();
     }
 }
-

@@ -12,33 +12,35 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import model.Boat;
 import model.BoatType;
 import model.Member;
-import model.MemberRegister;
 
 /**
- * A class that shows a GUI to add a new boat to a member of the Happy Pirate Boat Club
+ * This class is a GUI for edit an existing boat.
  */
-public class AddBoatView
+public class EditBoatView
 {
     private Button confirm;
     private Button cancel;
     
     /**
-     * The Constructor that initialize the stage and create all elements that is needed
-     * for the user to add a new boat to the system.
-     * @param member owner of the boat that are to be added
-     * @param memberRegister collection class of members.
+     * Constructor that initialize and starts the window
+     * with all elements the user need to edit a boat.
+     * @param boat the boat that are to be edited.
+     * @param member the owner of the boat.
      */
-    public AddBoatView(Member member, MemberRegister memberRegister)
+    public EditBoatView(Boat boat, Member member)
     {
         Stage stage = new Stage();
-        stage.setTitle("Add Boat");
+        stage.setTitle("Edit Boat");
         
         // Create elements
         VBox mainPane = new VBox();
-        Text mainText = new Text("Add Boat");
         
+        Text mainText = new Text("Edit Boat");
+        
+        // Change to list of boatType
         HBox boatTypeBox = new HBox();
         Text boatTypeText = new Text("Boat Type:");
         ComboBox<BoatType> boatTypeComboBox = new ComboBox<BoatType>();
@@ -52,8 +54,9 @@ public class AddBoatView
         TextField registerIdField = new TextField();
         
         HBox confirmButtonsBox = new HBox();
-        confirm = new Button("Add Boat");
+        confirm = new Button("Confirm");
         cancel = new Button("Cancel");
+        
         
         // adding elements to view
         mainPane.getChildren().add(mainText);
@@ -74,6 +77,12 @@ public class AddBoatView
         confirmButtonsBox.getChildren().add(cancel);
         mainPane.getChildren().add(confirmButtonsBox);
         
+       
+       // adding the previous values to the field
+        boatTypeComboBox.setValue(boat.getBoatType());
+        lengthField.setText(boat.getLength()+"");
+        registerIdField.setText(boat.getBoatID());
+       
         // ComboBox
       
         boatTypeComboBox.setItems(FXCollections.observableArrayList(BoatType.values()));
@@ -120,17 +129,17 @@ public class AddBoatView
                     else
                     {
                         // TODO, make names start with capital
-                        member.addBoat(boatTypeComboBox.getValue(),
+                        boat.editBoat(boatTypeComboBox.getValue(),
                                                 Integer.parseInt(lengthField.getText()),
                                 registerIdField.getText());
-    
+                        // stupid fix to make tableView update on edit
+                        member.getBoatList().set(0, member.getBoatList().get(0));
                         Stage closeStage = (Stage) confirm.getScene().getWindow();
                         closeStage.close();
                     }
                 }
         );
-    
-    
+        
         cancel.setOnAction(event ->
                 {
                     Stage closeStage = (Stage) confirm.getScene().getWindow();

@@ -18,8 +18,8 @@ import model.MemberRegister;
  */
 public class AddMemberView
 {
-    Button confirm;
-    Button cancel;
+    private Button confirm;
+    private Button cancel;
     
     public AddMemberView(MemberRegister memberRegister)
     {

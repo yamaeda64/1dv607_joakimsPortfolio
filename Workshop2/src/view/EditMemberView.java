@@ -1,10 +1,10 @@
 package view;
 
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -17,17 +17,24 @@ import model.Member;
 import model.MemberRegister;
 
 /**
- * Created by joakimbergqvist on 2017-09-27.
+ * A View that showing Member Info as well as let the user to change that info.
+ * Also from this view it's possible to add new boats to the member as well as
+ * edit the current ones.
  */
-public class EditMemberView
+public class EditMemberView implements BoatCRUD
 {
     private Boat selectedBoat;
     private Button confirm;
     private Button cancel;
     
+    /**
+     * Constructor that set up all elements so the user can view member info, edit it and
+     * table view for viewing and handling the members boats.
+     * @param member The member that will be affected of this class
+     * @param memberRegister the member collection class
+     */
     public EditMemberView(Member member, MemberRegister memberRegister)
     {
-        
         Stage stage = new Stage();
         stage.setTitle("Edit Member");
         
@@ -48,21 +55,20 @@ public class EditMemberView
         Text personalIdText = new Text("Personal ID:");
         TextField personalIdField = new TextField();
         
-        HBox numberOfBoatBoat = new HBox();
+        HBox numberOfBoatBox = new HBox();
         Text boatText = new Text("Boats:");
-        Text numberOfBoats = new Text("" + member.getBoatCount()); //TODO, update so boatcount get added when adding boat
-        
+        Label numberOfBoats = new Label();
+       
         HBox boatBox = new HBox();
         VBox boatButtonBox = new VBox();
         TableView<Boat> boatTableView = new TableView<Boat>();
-    
         
         Button addBoat = new Button("Add Boat");
         Button editBoat = new Button( "Edit Boat");
         Button deleteBoat = new Button("Delete Boat");
         
         HBox confirmButtonsBox = new HBox();
-        confirm = new Button("Save");            // TODO, boat changes only takes place if click save???
+        confirm = new Button("Confirm");            // TODO, boat changes only takes place if click save???
         cancel = new Button("Cancel");
         
         // adding elements to view
@@ -80,9 +86,9 @@ public class EditMemberView
         personalIdBox.getChildren().add(personalIdField);
         mainPane.getChildren().add(personalIdBox);
     
-        mainPane.getChildren().add(numberOfBoatBoat);
-        numberOfBoatBoat.getChildren().add(boatText);
-        numberOfBoatBoat.getChildren().add(numberOfBoats);
+        mainPane.getChildren().add(numberOfBoatBox);
+        numberOfBoatBox.getChildren().add(boatText);
+        numberOfBoatBox.getChildren().add(numberOfBoats);
         
         mainPane.getChildren().add(boatBox);
         boatBox.getChildren().add(boatButtonBox);
@@ -96,8 +102,7 @@ public class EditMemberView
         confirmButtonsBox.getChildren().add(confirm);
         confirmButtonsBox.getChildren().add(cancel);
         mainPane.getChildren().add(confirmButtonsBox);
-    
-       
+        
         
         // Setting sizes
         stage.setScene(new Scene(mainPane, 430, 500));
@@ -118,14 +123,7 @@ public class EditMemberView
         confirmButtonsBox.setPadding(new Insets(10,40,10,40));
         confirmButtonsBox.setSpacing(30);
         
-        // Effects
-        DropShadow shadow = new DropShadow();
-        
-        //mainText.setEffect(shadow);
-        
         stage.show();
-        // Hide this current window (if this is what you want)
-        //((Node)(event.getSource())).getScene().getWindow().hide();
         
         // colors
         mainPane.setStyle("-fx-background-color: rgb(165,195,225);");
@@ -136,29 +134,27 @@ public class EditMemberView
         lastNameField.setText(member.getLastName());
         personalIdField.setText(member.getPersonalNumber());
         
-        // Setting upp TableView for boats
-    
-        // tableView
-        //setting upp columns
+        // Setting upp TableView for boats,
+        // setting upp columns
     
         TableColumn boatTypeCol = new TableColumn("Boat Type");
         boatTypeCol.setCellValueFactory(
-                new PropertyValueFactory<Member, BoatType>("boatType")
+                new PropertyValueFactory<Boat, BoatType>("boatType")
         );
         boatTypeCol.setMinWidth(115);
     
         TableColumn lengthCol = new TableColumn("Length");
         lengthCol.setCellValueFactory(
-                new PropertyValueFactory<Member, Integer>("length")
+                new PropertyValueFactory<Boat, Integer>("length")
         );
     
         TableColumn boatIdCol = new TableColumn("Boat Reg");
         boatIdCol.setCellValueFactory(
-                new PropertyValueFactory<Member, String>("boatID")
+                new PropertyValueFactory<Boat, String>("boatID")
         );
-    
         
         boatTableView.getColumns().addAll(boatTypeCol, lengthCol, boatIdCol);
+        boatTableView.setItems(member.getBoatList());
         
         // Context Menu
         final ContextMenu contextMenu = new ContextMenu();
@@ -166,23 +162,17 @@ public class EditMemberView
         MenuItem deleteBoatContext = new MenuItem("Delete Boat");
     
         contextMenu.getItems().addAll(editBoatContext,deleteBoatContext);
-    
-    
         boatTableView.setContextMenu(contextMenu);
-        //  TableColumn personalID = new TableColumn("Personal ID");
-        //  numOfBoats.setCellValueFactory(
-        //           new PropertyValueFactory<Member, String>("personalNumber")
-        //   );
-        //  tableView.getColumns().add(personalID);
-    
-    
-        boatTableView.setItems(member.getBoatList());
+        
+        // Binds
+        
+        numberOfBoats.textProperty().bind(Bindings.size(boatTableView.getItems()).asString());
         
         // Actions
         
         addBoat.setOnAction(event ->
         {
-            AddBoatView addBoatView = new AddBoatView(member,memberRegister);
+           addBoat(member, memberRegister);
         });
         
         confirm.setOnAction(event ->
@@ -208,33 +198,43 @@ public class EditMemberView
                 }
         );
     
-        
+        // TODO, now boat edits will change both if you click Cancel and Save
         cancel.setOnAction(event ->
                 {
+                    // stupid fix to make the observable list trigger a change
+                    memberRegister.getMembers().set(0, memberRegister.getMembers().get(0));
                     Stage closeStage = (Stage) confirm.getScene().getWindow();
                     closeStage.close();
                 }
         );
         
-        
         editBoat.setOnAction(event ->
         {
-            // TODO, add a editBoat window here
+            if(selectedBoat!= null)
+            {
+                editBoat(selectedBoat, member);
+            }
+            // TODO, show error message that no boat is selected.
         });
         
         editBoatContext.setOnAction(event ->
         {
-            // TODO, add a editBoat window here
+            editBoat(selectedBoat, member);
         });
         
         deleteBoat.setOnAction(event ->
         {
-            member.deleteBoat(selectedBoat);
+            if(selectedBoat!= null)
+            {
+            deleteBoat(selectedBoat, member);
+            selectedBoat = null;
+            }
         });
         
         deleteBoatContext.setOnAction(event ->
         {
-            member.deleteBoat(selectedBoat);
+            deleteBoat(selectedBoat, member);
+            selectedBoat = null;
         });
         
         
@@ -271,5 +271,23 @@ public class EditMemberView
         {
             return false;
         }
+    }
+    
+    @Override
+    public void addBoat(Member member, MemberRegister memberRegister)
+    {
+        AddBoatView addBoatView = new AddBoatView(member,memberRegister);
+    }
+    
+    @Override
+    public void editBoat(Boat selectedBoat, Member member)
+    {
+        EditBoatView addBoatView = new EditBoatView(selectedBoat, member);
+    }
+    
+    @Override
+    public void deleteBoat(Boat selectedBoat, Member member)
+    {
+        member.deleteBoat(selectedBoat);
     }
 }

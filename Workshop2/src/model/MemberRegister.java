@@ -15,19 +15,14 @@ public class MemberRegister
 {
     private int memberIdCounter;
     private ObservableList<Member> observableList;
-    private ArrayList<Member> memberList; // TODO, only used by XML import, can it be removed? used by export???
     private XmlHandler xmlHandler;
     
     // Constructor
     public MemberRegister()
     {
-        memberList = new ArrayList<Member>();
-        observableList = FXCollections.observableList(memberList);
+        observableList = FXCollections.observableList(new ArrayList<>());
         xmlHandler = new XmlHandler();
-        
     }
-    
-    
     
     public void addMember(String firstName, String lastName, String personalID)
     {
@@ -36,19 +31,7 @@ public class MemberRegister
         newMember.setLastName(lastName);
         newMember.setPersonalNumber(personalID);
         newMember.setMemberID(memberIdCounter++);
-      //  memberList.add(newMember);
         observableList.add(newMember);
-    
-        // TODO, rewrite to save on exit and a saveButton
-     //   try
-     //   {
-     //       xmlHandler.exportXML(this);
-     //   }
-    //    catch(Exception e)
-    //    {
-    //        e.printStackTrace();
-    //    }
-        
     }
 
     public void deleteMember(Member memberToBeDeleted)
@@ -66,9 +49,7 @@ public class MemberRegister
             {
                 e.printStackTrace();
             }
-    
     }
-    
     
     // getters & setters
     
@@ -84,5 +65,4 @@ public class MemberRegister
         this.memberIdCounter = input;
     }
     
-    //public ArrayList<Member> getMemberList() {return memberList;}
 }
