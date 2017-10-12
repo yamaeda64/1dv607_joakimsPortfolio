@@ -68,7 +68,7 @@ public class EditMemberView implements BoatCRUD
         Button deleteBoat = new Button("Delete Boat");
         
         HBox confirmButtonsBox = new HBox();
-        confirm = new Button("Confirm");            // TODO, boat changes only takes place if click save???
+        confirm = new Button("Confirm");
         cancel = new Button("Cancel");
         
         // adding elements to view
@@ -197,8 +197,7 @@ public class EditMemberView implements BoatCRUD
                     }
                 }
         );
-    
-        // TODO, now boat edits will change both if you click Cancel and Save
+        
         cancel.setOnAction(event ->
                 {
                     // stupid fix to make the observable list trigger a change
