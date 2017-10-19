@@ -8,9 +8,8 @@ public interface BoatCRUD
     /**
      * UI for user to add a new boat.
      * @param member member that should be assigned the new boat.
-     * @param memberRegister memberRegister to trigger listener for displaying the boat count.
      */
-    void addBoat(model.Member member, model.MemberRegister memberRegister);
+    void addBoat(model.Member member);
     
     /**
      * UI for edit a boat.

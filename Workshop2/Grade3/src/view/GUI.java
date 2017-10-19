@@ -272,7 +272,6 @@ public class GUI implements MemberCRUD, BoatClubMainView, ModelChangedObserver
     @Override
     public void modelIsChanged()
     {
-        System.out.println("GUI is changed");
         updateTableView();
     }
 }

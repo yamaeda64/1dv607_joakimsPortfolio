@@ -50,7 +50,6 @@ public class Member
         boatCount++;
         boatList.add(boat);
         notifySubscribers();
-        System.out.println("Member.addBoat");
     }
     
     public void editBoat(Boat boat, BoatType boatType, int length, String boatID)
@@ -77,11 +76,8 @@ public class Member
     
     public void notifySubscribers()
     {
-        System.out.println("-------");
         for(ModelChangedObserver subscriber : subscribers)
         {
-            
-            System.out.println("MemberSendNotifySubscribers");
             subscriber.modelIsChanged();
         }
     }
@@ -148,7 +144,6 @@ public class Member
         
         if(!subscribers.contains(subscriber))
         {
-            System.out.println("SubsriberWasAdded: Member");
             subscribers.add(subscriber);
         }
     }
@@ -159,7 +154,6 @@ public class Member
             ModelChangedObserver temp = inputSubscribers.next();
             if(!subscribers.contains(temp))
             {
-                System.out.println("SubscriberWasAdded: MemberCollection");
                 subscribers.add(temp);
             }
         }

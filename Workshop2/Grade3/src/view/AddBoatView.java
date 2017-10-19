@@ -14,7 +14,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.BoatType;
 import model.Member;
-import model.MemberRegister;
 
 /**
  * A class that shows a GUI to add a new boat to a member of the Happy Pirate Boat Club
@@ -28,9 +27,8 @@ public class AddBoatView
      * The Constructor that initialize the stage and create all elements that is needed
      * for the user to add a new boat to the system.
      * @param member owner of the boat that are to be added
-     * @param memberRegister collection class of members.
      */
-    public AddBoatView(Member member, MemberRegister memberRegister)
+    public AddBoatView(Member member)
     {
         Stage stage = new Stage();
         stage.setTitle("Add Boat");

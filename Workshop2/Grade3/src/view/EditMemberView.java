@@ -179,7 +179,7 @@ public class EditMemberView implements BoatCRUD, ModelChangedObserver
         
         addBoat.setOnAction(event ->
         {
-           addBoat(member, memberRegister);
+           addBoat(member);
            
         });
         
@@ -193,7 +193,6 @@ public class EditMemberView implements BoatCRUD, ModelChangedObserver
                     }
                     else
                     {
-                        System.out.println("subscriber removed");
                         member.removeSubscriber(this);
                         member.editMember(firstNameField.getText(),
                                                 lastNameField.getText(),
@@ -208,7 +207,6 @@ public class EditMemberView implements BoatCRUD, ModelChangedObserver
         
         cancel.setOnAction(event ->
                 {
-                    System.out.println("subscriber removed");
                     member.removeSubscriber(this);
                     Stage closeStage = (Stage) confirm.getScene().getWindow();
                     closeStage.close();
@@ -283,9 +281,9 @@ public class EditMemberView implements BoatCRUD, ModelChangedObserver
     }
     
     @Override
-    public void addBoat(Member member, MemberRegister memberRegister)
+    public void addBoat(Member member)
     {
-        AddBoatView addBoatView = new AddBoatView(member,memberRegister);
+        AddBoatView addBoatView = new AddBoatView(member);
     }
     
     @Override
@@ -321,7 +319,7 @@ public class EditMemberView implements BoatCRUD, ModelChangedObserver
     @Override
     public void modelIsChanged()
     {
-        System.out.println("------modelIsChangedFrom EditMemberView----------");
+    
         updateTableView();
         updateBoatCount();
     }
