@@ -29,8 +29,5 @@ public interface BoatClubMainView
      */
     void showVerboseView(TableColumn firstNameCol);   // TODO, should be changed to numOfBoats instead
     
-    /**
-     * save the current list of members and their boats.
-     */
-    void saveMembers();
+   
 }

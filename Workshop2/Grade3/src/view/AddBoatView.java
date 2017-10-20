@@ -1,5 +1,6 @@
 package view;
 
+import controller.CRUDController;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -11,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.BoatType;
 import model.Member;
@@ -22,16 +24,21 @@ public class AddBoatView
 {
     private Button confirm;
     private Button cancel;
+    private CRUDController controller;
+    
+    
     
     /**
      * The Constructor that initialize the stage and create all elements that is needed
      * for the user to add a new boat to the system.
      * @param member owner of the boat that are to be added
      */
-    public AddBoatView(Member member)
+    public AddBoatView(Member member, CRUDController controller)
     {
+        this.controller = controller;
         Stage stage = new Stage();
         stage.setTitle("Add Boat");
+        stage.initModality(Modality.APPLICATION_MODAL);
         
         // Create elements
         VBox mainPane = new VBox();
@@ -121,7 +128,7 @@ public class AddBoatView
                         member.addBoat(boatTypeComboBox.getValue(),
                                                 Integer.parseInt(lengthField.getText()),
                                 registerIdField.getText());
-                        member.notifySubscribers();
+                      //  member.notifySubscribers();
                         Stage closeStage = (Stage) confirm.getScene().getWindow();
                         closeStage.close();
                     }

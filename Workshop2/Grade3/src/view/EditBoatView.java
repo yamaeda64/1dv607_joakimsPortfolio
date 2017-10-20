@@ -1,5 +1,6 @@
 package view;
 
+import controller.CRUDController;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -11,10 +12,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Boat;
 import model.BoatType;
-import model.Member;
 
 /**
  * This class is a GUI for edit an existing boat.
@@ -28,12 +29,13 @@ public class EditBoatView
      * Constructor that initialize and starts the window
      * with all elements the user need to edit a boat.
      * @param boat the boat that are to be edited.
-     * @param member the owner of the boat.
+    
      */
-    public EditBoatView(Boat boat, Member member)
+    public EditBoatView(Boat boat, CRUDController controller)
     {
         
         Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Edit Boat");
         
         // Create elements
@@ -79,7 +81,7 @@ public class EditBoatView
         mainPane.getChildren().add(confirmButtonsBox);
         
        
-       // adding the previous values to the field
+       
         boatTypeComboBox.setValue(boat.getBoatType());
         lengthField.setText(boat.getLength()+"");
         registerIdField.setText(boat.getBoatID());
@@ -130,7 +132,7 @@ public class EditBoatView
                     else
                     {
                         // TODO, make names start with capital
-                        member.editBoat(boat,
+                        controller.editBoat(
                                         boatTypeComboBox.getValue(),
                                         Integer.parseInt(lengthField.getText()),
                                         registerIdField.getText());

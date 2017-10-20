@@ -82,6 +82,37 @@ public class Member
         }
     }
     
+    public void addSubscriber(ModelChangedObserver subscriber)
+    {
+        
+        if(!subscribers.contains(subscriber))
+        {
+            subscribers.add(subscriber);
+        }
+    }
+    public void addSubscriber(Iterator<ModelChangedObserver> inputSubscribers)
+    {
+        while(inputSubscribers.hasNext())
+        {
+            ModelChangedObserver temp = inputSubscribers.next();
+            if(!subscribers.contains(temp))
+            {
+                subscribers.add(temp);
+            }
+        }
+    }
+    
+    public void removeSubscriber(ModelChangedObserver subscriber)
+    {
+        subscribers.remove(subscriber);
+    }
+    
+    @XmlElementWrapper
+    @XmlElement(name="Boats")
+    private ArrayList<Boat> getBoatList()// only for Xml handling
+    {
+        return boatList;
+    }
     
     // Getters & Setters
     
@@ -139,37 +170,7 @@ public class Member
         this.boatCount = boatCount;
     }
     
-    public void addSubscriber(ModelChangedObserver subscriber)
-    {
-        
-        if(!subscribers.contains(subscriber))
-        {
-            subscribers.add(subscriber);
-        }
-    }
-    public void addSubscriber(Iterator<ModelChangedObserver> inputSubscribers)
-    {
-        while(inputSubscribers.hasNext())
-        {
-            ModelChangedObserver temp = inputSubscribers.next();
-            if(!subscribers.contains(temp))
-            {
-                subscribers.add(temp);
-            }
-        }
-    }
     
-    public void removeSubscriber(ModelChangedObserver subscriber)
-    {
-        subscribers.remove(subscriber);
-    }
-    
-    @XmlElementWrapper
-    @XmlElement(name="Boats")
-    private ArrayList<Boat> getBoatList()// only for Xml handling
-    {
-        return boatList;
-    }
     
     public Iterator<Boat> getBoatIterator()
     {

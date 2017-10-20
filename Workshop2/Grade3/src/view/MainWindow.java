@@ -1,9 +1,11 @@
 package view;
 
+import controller.CRUDController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
@@ -12,6 +14,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
 import model.Member;
 import model.MemberRegister;
 import model.ModelChangedObserver;
@@ -25,27 +28,37 @@ import java.util.Iterator;
  *  and a save button to export the list of members and boats.
  */
 
-public class GUI implements MemberCRUD, BoatClubMainView, ModelChangedObserver
+public class MainWindow implements  BoatClubMainView, ModelChangedObserver
 {
-    private Member selectedMember;
     private MemberRegister memberRegister;
     private VBox mainPane;
     private TableView<Member> tableView;
     private ToggleGroup radioToggle;
     private RadioButton standardRadio;
     private RadioButton verboseRadio;
-    
+    private UserStrategy user;
+    private CRUDController controller;
     /**
      * Constructor that saves the arguments in fields before calling the mainMenu
      * @param inputMemberRegister class that holds the collection of members
-     * @param pane the main pane where all graphic should be added on to be visible to user.
      */
-    public GUI(MemberRegister inputMemberRegister, VBox pane)
+    public MainWindow(MemberRegister inputMemberRegister, UserStrategy user, CRUDController controller)
     {
+        this.controller = controller;
+        this.user = user;
+        Stage stage = new Stage();
+        
+        stage.setTitle("Happy Pirate Boat Club");
         memberRegister = inputMemberRegister;
         memberRegister.addSubscriber(this);
         this.memberRegister = memberRegister;
-        this.mainPane = pane;
+        this.mainPane = new VBox();
+        Scene scene = new Scene(mainPane);
+        stage.setScene(scene);
+        stage.setMinWidth(650);
+        stage.setMinHeight(700);
+        stage.show();
+        mainPane.setMinSize(650,700);
         mainMenu();
     }
     
@@ -60,22 +73,22 @@ public class GUI implements MemberCRUD, BoatClubMainView, ModelChangedObserver
         verboseRadio = new RadioButton("Verbose List");
         radioToggle = new ToggleGroup();
         HBox hbox = new HBox();
-        VBox buttonPane = new VBox();
+        
+        VBox buttonPane = user.makeMainButtonPane();
+        
         tableView = new TableView<Member>();
-        Button addMemberButton = new Button("Add Member");
-        Button editMemberButton = new Button("Edit Member");
-        Button deleteMemberButton = new Button("Delete Member");
-        Button saveButton = new Button("SAVE");
+        
+        
         //Button helpButton = new Button("Help");   // help is replaced by a readme file
-    
+        
         // Making radiobuttons toggle
         standardRadio.setToggleGroup(radioToggle);
         verboseRadio.setToggleGroup(radioToggle);
         standardRadio.setSelected(true);
-    
+        
         // mainPane size
         mainPane.setMinSize(500, 700);
-    
+        
         // adding the elements to the view
         mainPane.getChildren().add(text1HappyPirate);
         mainPane.getChildren().add(text2BoatClub);
@@ -85,11 +98,7 @@ public class GUI implements MemberCRUD, BoatClubMainView, ModelChangedObserver
         mainPane.getChildren().add(hbox);
         hbox.getChildren().add(buttonPane);
         hbox.getChildren().add(tableView);
-        buttonPane.getChildren().add(addMemberButton);
-        buttonPane.getChildren().add(editMemberButton);
-        buttonPane.getChildren().add(deleteMemberButton);
-     //   buttonPane.getChildren().add(helpButton);
-        buttonPane.getChildren().add(saveButton);
+        
         
         // position the elements in the view
         text1HappyPirate.setTextAlignment(TextAlignment.CENTER);
@@ -99,99 +108,55 @@ public class GUI implements MemberCRUD, BoatClubMainView, ModelChangedObserver
         radioButtonPane.setPadding(new Insets(30, 30, 0, 0));
         radioButtonPane.setAlignment(Pos.CENTER_RIGHT);
         hbox.setPadding(new Insets(10, 10, 10, 10));
-        buttonPane.setPadding(new Insets(10,40,10,20));
-        buttonPane.setSpacing(30);
-    
+        
+        
         // conforming sizes
         text1HappyPirate.setFont(new Font(40));
         text2BoatClub.setFont(new Font(30));
         buttonPane.setMinWidth(160);
         tableView.setMinWidth(444);
-    
+        
         buttonPane.setFillWidth(true);
-    
+        
         // color the view and elements
         mainPane.setStyle("-fx-background-color: rgb(150,175,205);");
         text1HappyPirate.setFill(Paint.valueOf("white"));
         text2BoatClub.setFill(Paint.valueOf("white"));
-    
+        
         // tableView
         //setting upp columns
-    
+        
         TableColumn memberIdCol = new TableColumn("Member ID");
         memberIdCol.setCellValueFactory(
                 new PropertyValueFactory<Member, Integer>("memberID")
         );
-    
+        
         TableColumn firstNameCol = new TableColumn("First Name");
         firstNameCol.setCellValueFactory(
                 new PropertyValueFactory<Member, String>("firstName")
         );
-    
+        
         TableColumn lastNameCol = new TableColumn("Last Name");
         lastNameCol.setCellValueFactory(
                 new PropertyValueFactory<Member, String>("lastName")
         );
-    
+        
         TableColumn numOfBoatsCol = new TableColumn("Boats");
         numOfBoatsCol.setCellValueFactory(
                 new PropertyValueFactory<Member, String>("boatCount")
         );
         tableView.getColumns().addAll(memberIdCol, firstNameCol, lastNameCol, numOfBoatsCol);
-        
-        final ContextMenu contextMenu = new ContextMenu();
-        MenuItem editMember = new MenuItem("Edit Member");
-        MenuItem deleteMember = new MenuItem("Delete Member");
-        
-        contextMenu.getItems().addAll(editMember,deleteMember);
-        
-        tableView.setContextMenu(contextMenu);
-        
         updateTableView();
         
-        // Actions
+        final ContextMenu contextMenu = user.makeMainContextMenu();
         
-        addMemberButton.setOnAction((event) ->
-        {
-            addMember();
-        });
-        editMember.setOnAction(event ->
-        {
-            editMember();
-        });
-        editMemberButton.setOnAction(event ->
-        {
-            if(selectedMember != null)
-            {
-                editMember();
-            }
-            else
-            {
-                // TODO, error message that no user is selected
-            }
-        });
-        deleteMember.setOnAction(event ->
-        {
-            deleteMember();
-        });
-        
-        deleteMemberButton.setOnAction(event ->
-        {
-            if(selectedMember != null)
-            {
-                deleteMember();
-            }
-        });
-        
-        saveButton.setOnAction(event-> {
-           saveMembers();
-        });
+        tableView.setContextMenu(contextMenu);
         
         tableView.setOnMouseClicked(event ->
         {
             if(tableView.getSelectionModel().getSelectedItem()!=null)
             {
-                selectedMember = tableView.getSelectionModel().getSelectedItem();
+                controller.setSelectedMember(tableView.getSelectionModel().getSelectedItem());
             }
         });
         
@@ -214,11 +179,11 @@ public class GUI implements MemberCRUD, BoatClubMainView, ModelChangedObserver
         personalNumberCol.setCellValueFactory(
                 new PropertyValueFactory<Member, String>("personalNumber")
         );
-       tableView.getColumns().add(personalNumberCol);
-    
+        tableView.getColumns().add(personalNumberCol);
+        
         firstNameCol.setCellFactory(CustomTextFieldTableCell.forTableColumn()); // adds popup for boats,
-                                        // TODO, should be changed to numOfBoatsCol but since  the is integer
-                                        // TODO, that is some not yet solve issue.
+        // TODO, should be changed to numOfBoatsCol but since  the is integer
+        // TODO, that is some not yet solve issue.
     }
     @Override
     public void showStandardView(TableColumn firstNameCol)
@@ -229,44 +194,22 @@ public class GUI implements MemberCRUD, BoatClubMainView, ModelChangedObserver
         firstNameCol.setCellFactory(CustomTextFieldTableCell.revertTableColumn());
     }
     
-    @Override
-    public void addMember()
-    {
-        AddMemberView addMemberView = new AddMemberView(memberRegister);
-    }
     
-    @Override
-    public void editMember()
-    {   selectedMember.addSubscriber(this);
-        EditMemberView editMemberView = new EditMemberView(selectedMember, memberRegister);
-    }
     
-    @Override
-    public void deleteMember()
-    {
-        memberRegister.deleteMember(selectedMember);
-        selectedMember = null;
-    }
-    
-    @Override
-    public void saveMembers()
-    {
-        memberRegister.exportXML(memberRegister);
-    }
     
     
     
     public void updateTableView()
     {
-       Iterator<Member> members = memberRegister.getMemberIterator();
-       
-       ObservableList<Member> observableList = FXCollections.observableArrayList();
-       while(members.hasNext())
-       {
-           observableList.add(members.next());
-       }
-       tableView.setItems(observableList);
-       tableView.refresh();
+        Iterator<Member> members = memberRegister.getMemberIterator();
+        
+        ObservableList<Member> observableList = FXCollections.observableArrayList();
+        while(members.hasNext())
+        {
+            observableList.add(members.next());
+        }
+        tableView.setItems(observableList);
+        tableView.refresh();
     }
     
     @Override
@@ -274,4 +217,10 @@ public class GUI implements MemberCRUD, BoatClubMainView, ModelChangedObserver
     {
         updateTableView();
     }
+    
+    public void addAsMemberObserver(Member inputMember)
+    {
+        
+    }
+    
 }

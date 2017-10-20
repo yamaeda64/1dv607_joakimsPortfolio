@@ -34,18 +34,20 @@ public class MemberRegister
         members.add(newMember);
         notifySubscribers();
     }
-
+    
+    
+    
     public void deleteMember(Member memberToBeDeleted)
     {
         getMembers().remove(memberToBeDeleted);
         notifySubscribers();
     }
     
-    public void exportXML(MemberRegister input)
+    public void exportXML()
     {
            try
            {
-               xmlHandler.exportXML(input);
+               xmlHandler.exportXML(this);
            }
             catch(Exception e)
             {

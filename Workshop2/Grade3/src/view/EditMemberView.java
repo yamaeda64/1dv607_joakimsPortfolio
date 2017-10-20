@@ -1,5 +1,6 @@
 package view;
 
+import controller.CRUDController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -11,9 +12,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.*;
+import model.Boat;
+import model.BoatType;
+import model.Member;
+import model.ModelChangedObserver;
 
+import java.util.IllegalFormatException;
+import java.util.InputMismatchException;
 import java.util.Iterator;
 
 /**
@@ -21,46 +28,85 @@ import java.util.Iterator;
  * Also from this view it's possible to add new boats to the member as well as
  * edit the current ones.
  */
-public class EditMemberView implements BoatCRUD, ModelChangedObserver
+public class EditMemberView implements ModelChangedObserver
 {
     private TableView<Boat> boatTableView;
     private Member member;
-    private Boat selectedBoat;
     private Button confirm;
     private Button cancel;
-    private MemberRegister memberRegister;
     private Label numberOfBoats;
+    private CRUDController controller;
+    private UserStrategy user;
     /**
      * Constructor that set up all elements so the user can view member info, edit it and
      * table view for viewing and handling the members boats.
      * @param inputMember The member that will be affected of this class
-     * @param inputMemberRegister the member collection class
      */
-    public EditMemberView(Member inputMember, MemberRegister inputMemberRegister)
+    public EditMemberView(Member inputMember, CRUDController controller, UserStrategy user)
     {
+        this.user = user;
+        this.controller = controller;
         inputMember.addSubscriber(this);
-        memberRegister = inputMemberRegister;
         this.member = inputMember;
         
         Stage stage = new Stage();
-        stage.setTitle("Edit Member");
+        stage.setTitle("View Member");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        
+       
+        
+        stage.show();
         
         // Create elements
         VBox mainPane = new VBox();
-        
+       
         Text mainText = new Text("Edit Member");
-        
+    
         HBox firstNameBox = new HBox();
         Text firstNameText = new Text("First name:");
         TextField firstNameField = new TextField();
-        
+    
         HBox lastNameBox = new HBox();
         Text lastNameText = new Text("Last name:");
         TextField lastNameField = new TextField();
-        
+    
         HBox personalIdBox = new HBox();
         Text personalIdText = new Text("Personal ID:");
         TextField personalIdField = new TextField();
+        Text personalIdFormat = new Text("YYYYMMDD-XXXX");
+    
+        user.makeEditViewInfo(mainText, firstNameField, lastNameField, personalIdField);
+        mainPane.getChildren().add(mainText);
+    
+        firstNameBox.getChildren().add(firstNameText);
+        firstNameBox.getChildren().add(firstNameField);
+        mainPane.getChildren().add(firstNameBox);
+    
+        lastNameBox.getChildren().add(lastNameText);
+        lastNameBox.getChildren().add(lastNameField);
+        mainPane.getChildren().add(lastNameBox);
+    
+        personalIdBox.getChildren().add(personalIdText);
+        personalIdBox.getChildren().add(personalIdField);
+        personalIdBox.getChildren().add(personalIdFormat);
+        mainPane.getChildren().add(personalIdBox);
+    
+    
+        mainText.setFont(new Font(40));
+    
+        firstNameBox.setPadding(new Insets(0,0,0,5));
+        lastNameBox.setPadding(new Insets(0,0,0,5));
+        personalIdBox.setPadding(new Insets(0,0,0,5));
+        firstNameBox.setSpacing(13);
+        lastNameBox.setSpacing(13);
+        personalIdBox.setSpacing(7);
+        
+        mainText.setFill(Color.WHITE);
+    
+        firstNameField.setText(member.getFirstName());
+        lastNameField.setText(member.getLastName());
+        personalIdField.setText(member.getPersonalNumber());
+    
         
         HBox numberOfBoatBox = new HBox();
         Text boatText = new Text("Boats:");
@@ -70,29 +116,10 @@ public class EditMemberView implements BoatCRUD, ModelChangedObserver
         VBox boatButtonBox = new VBox();
         boatTableView = new TableView<Boat>();
         
-        Button addBoat = new Button("Add Boat");
-        Button editBoat = new Button( "Edit Boat");
-        Button deleteBoat = new Button("Delete Boat");
-        
-        HBox confirmButtonsBox = new HBox();
-        confirm = new Button("Confirm");
-        cancel = new Button("Cancel");
-        
+        user.makeEditViewBoatButtonBox(boatButtonBox);
+       
         // adding elements to view
-        mainPane.getChildren().add(mainText);
         
-        firstNameBox.getChildren().add(firstNameText);
-        firstNameBox.getChildren().add(firstNameField);
-        mainPane.getChildren().add(firstNameBox);
-        
-        lastNameBox.getChildren().add(lastNameText);
-        lastNameBox.getChildren().add(lastNameField);
-        mainPane.getChildren().add(lastNameBox);
-        
-        personalIdBox.getChildren().add(personalIdText);
-        personalIdBox.getChildren().add(personalIdField);
-        mainPane.getChildren().add(personalIdBox);
-    
         mainPane.getChildren().add(numberOfBoatBox);
         numberOfBoatBox.getChildren().add(boatText);
         numberOfBoatBox.getChildren().add(numberOfBoats);
@@ -102,45 +129,44 @@ public class EditMemberView implements BoatCRUD, ModelChangedObserver
         boatBox.getChildren().add(boatButtonBox);
        
         boatBox.getChildren().add(boatTableView);
+    
+        HBox confirmButtonBox = new HBox();
+    
+        Button confirm = new Button("Confirm");
+        Button cancel = new Button("Cancel");
+    
+        confirmButtonBox.getChildren().add(confirm);
+        confirmButtonBox.getChildren().add(cancel);
+    
+        user.setButtonsEditView(confirm, cancel);
+        confirmButtonBox.setPadding(new Insets(10,40,10,40));
+        confirmButtonBox.setSpacing(30);
         
-        boatButtonBox.getChildren().add(addBoat);
-        boatButtonBox.getChildren().add(editBoat);
-        boatButtonBox.getChildren().add(deleteBoat);
+        mainPane.getChildren().add(confirmButtonBox);
         
-        confirmButtonsBox.getChildren().add(confirm);
-        confirmButtonsBox.getChildren().add(cancel);
-        mainPane.getChildren().add(confirmButtonsBox);
+        
         
         
         // Setting sizes
         stage.setScene(new Scene(mainPane, 430, 500));
-        mainText.setFont(new Font(40));
+        personalIdFormat.setFont(new Font(12));
         
         
         // Alignments
         
         mainPane.setPadding(new Insets(10,25,10,25));
         mainPane.setSpacing(10);
-        firstNameBox.setPadding(new Insets(0,0,0,5));
-        lastNameBox.setPadding(new Insets(0,0,0,5));
-        personalIdBox.setPadding(new Insets(0,0,0,5));
-        firstNameBox.setSpacing(13);
-        lastNameBox.setSpacing(13);
-        personalIdBox.setSpacing(7);
-        
-        confirmButtonsBox.setPadding(new Insets(10,40,10,40));
-        confirmButtonsBox.setSpacing(30);
-        
+        boatButtonBox.setSpacing(10);
+        personalIdFormat.setLayoutY(40);
+       
         stage.show();
+        
         
         // colors
         mainPane.setStyle("-fx-background-color: rgb(165,195,225);");
-        mainText.setFill(Color.WHITE);
+        personalIdFormat.setFill(Color.WHITE);
         
         // Setting prefilled fields
-        firstNameField.setText(member.getFirstName());
-        lastNameField.setText(member.getLastName());
-        personalIdField.setText(member.getPersonalNumber());
         
         numberOfBoats.setText(" "+member.getBoatCount());
         
@@ -164,91 +190,63 @@ public class EditMemberView implements BoatCRUD, ModelChangedObserver
         );
         
         boatTableView.getColumns().addAll(boatTypeCol, lengthCol, boatIdCol);
-        
+        TableRow<Member> tr = new TableRow<>();
         updateTableView();
         
         // Context Menu
-        final ContextMenu contextMenu = new ContextMenu();
-        MenuItem editBoatContext = new MenuItem("Edit Boat");
-        MenuItem deleteBoatContext = new MenuItem("Delete Boat");
-    
-        contextMenu.getItems().addAll(editBoatContext,deleteBoatContext);
+        final ContextMenu contextMenu = user.makeBoatContextMenu();
+        
         boatTableView.setContextMenu(contextMenu);
         
-        // Actions
-        
-        addBoat.setOnAction(event ->
+        boatTableView.setOnMouseClicked(event ->
         {
-           addBoat(member);
-           
+            if(boatTableView.getSelectionModel().getSelectedItem() != null)
+            {
+                controller.setSelectedBoat(boatTableView.getSelectionModel().getSelectedItem());
+            }
         });
         
         confirm.setOnAction(event ->
+        {
+            {
+                try
                 {
                     if(firstNameField.getText().isEmpty()
                             || lastNameField.getText().isEmpty()
                             || personalIdField.getText().isEmpty())
                     {
                         //TODO, show error message
-                    }
+                    }   // TODO, make names start with capital
                     else
                     {
-                        member.removeSubscriber(this);
-                        member.editMember(firstNameField.getText(),
-                                                lastNameField.getText(),
-                                                personalIdField.getText());
+                        // fields are approved
+                        controller.editMember(firstNameField.getText(),
+                                lastNameField.getText(),
+                                personalIdField.getText());
                         
-                        
+                        controller.setSelectedBoat(null);
+                        inputMember.removeSubscriber(this);
                         Stage closeStage = (Stage) confirm.getScene().getWindow();
                         closeStage.close();
                     }
                 }
-        );
+                catch(IllegalFormatException e)
+                {
+                    // Output that personal number was wrong
+                }
+                catch(InputMismatchException e)
+                {
+                    // Output that name was wrong
+                }
+            }
+        });
         
         cancel.setOnAction(event ->
-                {
-                    member.removeSubscriber(this);
-                    Stage closeStage = (Stage) confirm.getScene().getWindow();
-                    closeStage.close();
-                }
-        );
-        
-        editBoat.setOnAction(event ->
         {
-            if(selectedBoat!= null)
-            {
-                editBoat(selectedBoat, member);
-            }
-            // TODO, show error message that no boat is selected.
-        });
-        
-        editBoatContext.setOnAction(event ->
-        {
-            editBoat(selectedBoat, member);
-        });
-        
-        deleteBoat.setOnAction(event ->
-        {
-            if(selectedBoat!= null)
-            {
-            deleteBoat(selectedBoat, member);
-            selectedBoat = null;
-            }
-        });
-        
-        deleteBoatContext.setOnAction(event ->
-        {
-            deleteBoat(selectedBoat, member);
-            selectedBoat = null;
-        });
-        
-        
-        boatTableView.setOnMouseClicked(event ->
-        {
-            if(boatTableView.getSelectionModel().getSelectedItem() != null)
-            {
-                selectedBoat = boatTableView.getSelectionModel().getSelectedItem();
-            }
+            inputMember.removeSubscriber(this);
+            controller.setSelectedBoat(null);
+            Stage closeStage = (Stage) confirm.getScene().getWindow();
+            closeStage.close();
         });
     }
     
@@ -280,25 +278,6 @@ public class EditMemberView implements BoatCRUD, ModelChangedObserver
         }
     }
     
-    @Override
-    public void addBoat(Member member)
-    {
-        AddBoatView addBoatView = new AddBoatView(member);
-    }
-    
-    @Override
-    public void editBoat(Boat selectedBoat, Member member)
-    {
-        EditBoatView addBoatView = new EditBoatView(selectedBoat, member);
-    }
-    
-    @Override
-    public void deleteBoat(Boat selectedBoat, Member member)
-    {
-        member.deleteBoat(selectedBoat);
-        updateTableView();
-        numberOfBoats.setText(" "+member.getBoatCount());
-    }
     
     private void updateTableView()
     {
@@ -310,6 +289,7 @@ public class EditMemberView implements BoatCRUD, ModelChangedObserver
         }
             boatTableView.setItems(observableList);
             boatTableView.refresh();
+        
     }
     private void updateBoatCount()
     {
@@ -319,7 +299,6 @@ public class EditMemberView implements BoatCRUD, ModelChangedObserver
     @Override
     public void modelIsChanged()
     {
-    
         updateTableView();
         updateBoatCount();
     }

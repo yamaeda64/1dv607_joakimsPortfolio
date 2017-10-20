@@ -7,12 +7,12 @@ public interface MemberCRUD
     /**
      * UI for adding a new member.
      */
-    void addMember();
+    void addMember(String firstName, String lastName, String personalNumber);
     
     /**
      * UI to edit an existing member.
      */
-    void editMember();
+    void editMember(String firstName, String lastName, String personalNumber);
     
     /**
      * Remove a member from the system.

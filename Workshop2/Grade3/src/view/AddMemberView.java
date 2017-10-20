@@ -1,5 +1,6 @@
 package view;
 
+import controller.CRUDController;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -10,8 +11,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.MemberRegister;
+
+import java.util.IllegalFormatException;
+import java.util.InputMismatchException;
 
 /**
  * Created by joakimbergqvist on 2017-09-27.
@@ -21,11 +25,12 @@ public class AddMemberView
     private Button confirm;
     private Button cancel;
     
-    public AddMemberView(MemberRegister memberRegister)
+    public AddMemberView(CRUDController controller)
     {
         
         Stage stage = new Stage();
         stage.setTitle("Add Member");
+        stage.initModality(Modality.APPLICATION_MODAL);
         
         // Create elements
         VBox mainPane = new VBox();
@@ -105,21 +110,32 @@ public class AddMemberView
         // Actions
         confirm.setOnAction(event ->
                 {
-                    if(firstNameField.getText().isEmpty()
-                            || lastNameField.getText().isEmpty()
-                            || personalIdField.getText().isEmpty())
+                    try
                     {
-                        //TODO, show error message
-                    }   // TODO, make names start with capital
-                    else
+                        if(firstNameField.getText().isEmpty()
+                                || lastNameField.getText().isEmpty()
+                                || personalIdField.getText().isEmpty())
+                        {
+                            //TODO, show error message
+                        }   // TODO, make names start with capital
+                        else
+                        {
+                            // fields are approved
+                            controller.addMember(firstNameField.getText(),
+                                    lastNameField.getText(),
+                                    personalIdField.getText());
+        
+                            Stage closeStage = (Stage) confirm.getScene().getWindow();
+                            closeStage.close();
+                        }
+                    }
+                    catch(IllegalFormatException e)
                     {
-                        // fields are approved
-                        memberRegister.addMember(firstNameField.getText(),
-                                                lastNameField.getText(),
-                                                personalIdField.getText());
-    
-                        Stage closeStage = (Stage) confirm.getScene().getWindow();
-                        closeStage.close();
+                        // Output that personal number was wrong
+                    }
+                    catch(InputMismatchException e)
+                    {
+                        // Output that name was wrong
                     }
                 }
         );
