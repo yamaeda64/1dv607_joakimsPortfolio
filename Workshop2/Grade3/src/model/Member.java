@@ -16,7 +16,7 @@ public class Member
   
     private String lastName;
 
-    private String personalNumber;
+    private PersonalNumber personalNumber;
 
     private int memberID;
  
@@ -33,6 +33,7 @@ public class Member
     {
         subscribers = new ArrayList<>();
         boatList = new ArrayList<>();
+        personalNumber = new PersonalNumber();
     }
     
     /**
@@ -69,7 +70,7 @@ public class Member
     {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.personalNumber = personalID;
+        this.personalNumber.setPersonalNumber(personalID);
         notifySubscribers();
     }
     
@@ -139,13 +140,15 @@ public class Member
     
     public void setPersonalNumber(String personalNumber)
     {
-        this.personalNumber = personalNumber;
+        this.personalNumber.setPersonalNumber(personalNumber);
     }
+    
+    
     
     @XmlAttribute
     public String getPersonalNumber()
     {
-        return personalNumber;
+        return personalNumber.getPersonalNumber();
     }
    
     @XmlAttribute
@@ -170,7 +173,10 @@ public class Member
         this.boatCount = boatCount;
     }
     
-    
+    public PersonalNumber getPersonalNumberObject()
+    {
+        return personalNumber;
+    }
     
     public Iterator<Boat> getBoatIterator()
     {

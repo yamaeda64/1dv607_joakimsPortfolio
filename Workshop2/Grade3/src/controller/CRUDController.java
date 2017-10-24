@@ -156,7 +156,10 @@ public class CRUDController implements MemberCRUD, BoatCRUD
     
     public void editBoatWindow()
     {
-        EditBoatView editBoatView = new EditBoatView(selectedBoat, this);
+        if(selectedBoat != null)
+        {
+            EditBoatView editBoatView = new EditBoatView(selectedBoat, this);
+        }
     }
     public MainWindow getMainWindow()
     {

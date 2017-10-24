@@ -48,6 +48,7 @@ public class AddMemberView
         HBox personalIdBox = new HBox();
         Text personalIdText = new Text("Personal ID:");
         TextField personalIdField = new TextField();
+        Text personalIdFormat = new Text("YYYYMMDD-XXXX");
         
         HBox confirmButtonsBox = new HBox();
         confirm = new Button("Add Member");
@@ -67,6 +68,7 @@ public class AddMemberView
         
         personalIdBox.getChildren().add(personalIdText);
         personalIdBox.getChildren().add(personalIdField);
+        personalIdBox.getChildren().add(personalIdFormat);
         mainPane.getChildren().add(personalIdBox);
         
         confirmButtonsBox.getChildren().add(confirm);
@@ -75,9 +77,9 @@ public class AddMemberView
         
         
         // Setting sizes
-        stage.setScene(new Scene(mainPane, 330, 250));
+        stage.setScene(new Scene(mainPane, 390, 250));
         mainText.setFont(new Font(40));
-        
+        personalIdFormat.setFont(new Font(14));
         
         // Alignments
         
@@ -93,6 +95,8 @@ public class AddMemberView
         confirmButtonsBox.setPadding(new Insets(10,40,10,40));
         confirmButtonsBox.setSpacing(30);
         
+        personalIdFormat.setScaleX(0.7);
+        
         // Effects
         DropShadow shadow = new DropShadow();
         
@@ -105,6 +109,7 @@ public class AddMemberView
         // colors
         mainPane.setStyle("-fx-background-color: rgb(165,195,225);");
         mainText.setFill(Color.WHITE);
+        personalIdFormat.setFill(Color.WHITE);
         
         
         // Actions
@@ -136,6 +141,7 @@ public class AddMemberView
                     catch(InputMismatchException e)
                     {
                         // Output that name was wrong
+                        System.out.println("AddMemberView :  " + e.getMessage());
                     }
                 }
         );

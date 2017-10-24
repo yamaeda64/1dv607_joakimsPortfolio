@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<memberRegister>
+    <memberList boatCount="1" firstName="Kaj" lastName="Bååth" memberID="1" personalNumber="19900614-2534">
+        <boatList>
+            <Boats boatID="DM-784" boatType="MOTORBOAT" length="1242"/>
+        </boatList>
+    </memberList>
+    <memberList boatCount="1" firstName="Ferry" lastName="Storm" memberID="2" personalNumber="19880229-5959">
+        <boatList>
+            <Boats boatID="UL-994" boatType="MOTORBOAT" length="1580"/>
+        </boatList>
+    </memberList>
+    <memberList boatCount="1" firstName="Ingrid" lastName="Bergqvist" memberID="3" personalNumber="19560801-6001">
+        <boatList>
+            <Boats boatID="YT-119" boatType="SAILBOAT" length="1300"/>
+        </boatList>
+    </memberList>
+    <memberList boatCount="1" firstName="Karin" lastName="Boye" memberID="5" personalNumber="19001026-3846">
+        <boatList>
+            <Boats boatID="" boatType="OTHER" length="324"/>
+        </boatList>
+    </memberList>
+    <memberList boatCount="3" firstName="Tage" lastName="Segel" memberID="6" personalNumber="20000101-8456">
+        <boatList>
+            <Boats boatID="DX-131" boatType="SAILBOAT" length="242"/>
+            <Boats boatID="" boatType="SAILBOAT" length="350"/>
+            <Boats boatID="" boatType="KAYAK_CANOE" length="324"/>
+        </boatList>
+    </memberList>
+    <memberList boatCount="4" firstName="My" lastName="Masthugg" memberID="7" personalNumber="19921030-5588">
+        <boatList>
+            <Boats boatID="VR-765" boatType="MOTORSAILER" length="984"/>
+            <Boats boatID="OV-332" boatType="MOTORBOAT" length="1735"/>
+            <Boats boatID="" boatType="OTHER" length="333"/>
+            <Boats boatID="" boatType="KAYAK_CANOE" length="360"/>
+        </boatList>
+    </memberList>
+</memberRegister>

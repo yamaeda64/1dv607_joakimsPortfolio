@@ -1,8 +1,9 @@
 package view;
 
 import controller.CRUDController;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import controller.FilterController;
+import controller.filter.AllMembersCriteria;
+import controller.filter.Criteria;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -18,8 +19,6 @@ import javafx.stage.Stage;
 import model.Member;
 import model.MemberRegister;
 import model.ModelChangedObserver;
-
-import java.util.Iterator;
 
 /**
  *  GUI Class is the base of the View package for the Happy Pirate Boat Club.
@@ -38,12 +37,17 @@ public class MainWindow implements  BoatClubMainView, ModelChangedObserver
     private RadioButton verboseRadio;
     private UserStrategy user;
     private CRUDController controller;
+    private FilterController filterController;
+    private Criteria filter;
+    
     /**
      * Constructor that saves the arguments in fields before calling the mainMenu
      * @param inputMemberRegister class that holds the collection of members
      */
     public MainWindow(MemberRegister inputMemberRegister, UserStrategy user, CRUDController controller)
     {
+        filterController = new FilterController(this);
+        filter = new AllMembersCriteria();
         this.controller = controller;
         this.user = user;
         Stage stage = new Stage();
@@ -77,7 +81,7 @@ public class MainWindow implements  BoatClubMainView, ModelChangedObserver
         VBox buttonPane = user.makeMainButtonPane();
         
         tableView = new TableView<Member>();
-        
+        HBox filerPane = filterController.getFilterView();
         
         //Button helpButton = new Button("Help");   // help is replaced by a readme file
         
@@ -98,6 +102,7 @@ public class MainWindow implements  BoatClubMainView, ModelChangedObserver
         mainPane.getChildren().add(hbox);
         hbox.getChildren().add(buttonPane);
         hbox.getChildren().add(tableView);
+        mainPane.getChildren().add(filerPane);
         
         
         // position the elements in the view
@@ -171,6 +176,7 @@ public class MainWindow implements  BoatClubMainView, ModelChangedObserver
         });
     }
     
+    
     @Override
     public void showVerboseView(TableColumn firstNameCol)
     {
@@ -195,20 +201,10 @@ public class MainWindow implements  BoatClubMainView, ModelChangedObserver
     }
     
     
-    
-    
-    
-    
     public void updateTableView()
     {
-        Iterator<Member> members = memberRegister.getMemberIterator();
-        
-        ObservableList<Member> observableList = FXCollections.observableArrayList();
-        while(members.hasNext())
-        {
-            observableList.add(members.next());
-        }
-        tableView.setItems(observableList);
+
+        tableView.setItems(filter.meetCriteria(memberRegister.getMemberIterator()));
         tableView.refresh();
     }
     
@@ -221,6 +217,11 @@ public class MainWindow implements  BoatClubMainView, ModelChangedObserver
     public void addAsMemberObserver(Member inputMember)
     {
         
+    }
+    
+    public void setCriteria(Criteria filter)
+    {
+        this.filter = filter;
     }
     
 }

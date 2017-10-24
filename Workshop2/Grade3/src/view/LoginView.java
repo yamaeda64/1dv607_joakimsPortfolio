@@ -109,16 +109,16 @@ public class LoginView
         // Actions
         confirm.setOnAction(event ->
             {
-               //TODO ADD PASSWORD if(userField.getText().toLowerCase().equals("admin"))        // Hardcoded user/password
-               // {
-               //     if(passwordField.getText().equals("admin"))
-               //     {
+               if(userField.getText().toLowerCase().equals("admin"))        // Hardcoded user/password
+                {
+                    if(passwordField.getText().equals("admin"))
+                    {
                         controller.showMainWindow(userFactory.getAdminUser(controller));
                         Stage closeStage = (Stage) confirm.getScene().getWindow();
                         closeStage.close();
-               //     }
+                    }
                 
-              //  }
+                }
             }
     );
     

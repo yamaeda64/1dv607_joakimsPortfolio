@@ -145,11 +145,10 @@ public class EditMemberView implements ModelChangedObserver
         mainPane.getChildren().add(confirmButtonBox);
         
         
-        
-        
         // Setting sizes
         stage.setScene(new Scene(mainPane, 430, 500));
-        personalIdFormat.setFont(new Font(12));
+        personalIdFormat.setFont(new Font(14));
+        personalIdFormat.setScaleX(0.7);
         
         
         // Alignments
@@ -157,7 +156,6 @@ public class EditMemberView implements ModelChangedObserver
         mainPane.setPadding(new Insets(10,25,10,25));
         mainPane.setSpacing(10);
         boatButtonBox.setSpacing(10);
-        personalIdFormat.setLayoutY(40);
        
         stage.show();
         
@@ -236,7 +234,7 @@ public class EditMemberView implements ModelChangedObserver
                 }
                 catch(InputMismatchException e)
                 {
-                    // Output that name was wrong
+                   System.out.println(e.getMessage());
                 }
             }
         });
