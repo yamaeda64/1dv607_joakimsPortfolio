@@ -35,7 +35,6 @@ public class Table extends VBox implements View
             System.exit(0);
         });
         
-      
         recentDealerHand = new ArrayList<Card>();
         recentPlayerHand = new ArrayList<Card>();
         
@@ -44,15 +43,12 @@ public class Table extends VBox implements View
         playerSide = new PlayerSide();
         
         getChildren().addAll(dealerSide,commandPane,playerSide) ;
-         
         
         Scene scene = new Scene(this);
         primaryStage.setScene(scene);
         primaryStage.show();
-        setPrefSize(600,400);
-        setMinSize(800,600);
-        
-        
+        primaryStage.setResizable(false);
+       
     }
     
     @Override

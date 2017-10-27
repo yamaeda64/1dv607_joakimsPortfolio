@@ -28,7 +28,8 @@ public class DealerSide extends VBox
         dealerCardPane = new HBox();
         getChildren().addAll(dealerScorePane, dealerCardPane);
         
-        dealerCardPane.setMinSize(600,200);
+        dealerCardPane.setMinSize(600,100);
+        dealerCardPane.setMaxSize(600,100);
         dealerCardPane.setStyle("-fx-background-color: lightgreen;");
         
         Font font = new Font(30);

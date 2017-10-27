@@ -15,7 +15,6 @@ public class PlayGame implements CardDealtObserver
     private Button playGame;
     private Button stand;
     private Button hit;
-    //private Thread thread;
     
     public PlayGame(Game game, Table view) throws InterruptedException
     {
@@ -26,9 +25,6 @@ public class PlayGame implements CardDealtObserver
         this.mainPane = mainPane;
         
         game.getDealer().addObserverSubscriber(this);
-        
-        
-        thread.start();
         
         playGame = view.getPlayGameButton();
         hit = view.getHitButton();
@@ -54,14 +50,6 @@ public class PlayGame implements CardDealtObserver
         
         
     }
-        
-     /*   //view.DisplayWelcomeMessage();
-        Platform.runLater(()->
-        {
-            Play();
-        });
-        
-    }*/
     
     Runnable r = new Runnable()
     {
@@ -75,28 +63,6 @@ public class PlayGame implements CardDealtObserver
         }
     };
     
-   Thread thread = new Thread(r)
-    {
-        @Override
-        public void run()
-        {
-            super.run();
-        }
-    };
-    
-    
-    
-   /* public void playThread()
-    {
-        new Thread(new Runnable(){
-            public void run(){
-                Play();
-            });
-        }
-                
-                , "Thread A").start();
-    }
-    */
     public boolean Play()
     {
 

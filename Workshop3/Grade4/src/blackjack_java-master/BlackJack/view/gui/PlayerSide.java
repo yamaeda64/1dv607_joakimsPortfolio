@@ -26,7 +26,8 @@ public class PlayerSide extends VBox
         playerCardPane = new HBox();
         getChildren().addAll(playerCardPane, playerScorePane);
     
-        playerCardPane.setMinSize(600, 200);
+        playerCardPane.setMinSize(600, 100);
+        playerCardPane.setMaxSize(600,100);
         playerCardPane.setStyle("-fx-background-color: lightgreen;");
     
         Font font = new Font(30);

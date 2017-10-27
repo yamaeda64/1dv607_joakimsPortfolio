@@ -97,7 +97,7 @@ public class Dealer extends Player
         Card c = deck.GetCard();
         c.Show(isShown);
         player.addCardtoHand(c);
-        
+
         notifySubscribers();
     }
     

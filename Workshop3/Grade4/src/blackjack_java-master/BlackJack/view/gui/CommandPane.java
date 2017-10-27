@@ -21,6 +21,7 @@ public class CommandPane extends Pane
         getChildren().add(winnerMessage);
         this.setStyle("-fx-background-color: lightgreen;");
         setMinSize(600,100);
+        setMaxSize(600,100);
         playGame = new Button("Play Game");
         hit = new Button("Hit");
         stand = new Button("Stand");
@@ -35,6 +36,7 @@ public class CommandPane extends Pane
         stand.setLayoutX(290);
         stand.setLayoutY(70);
         
+        winnerMessage.setLayoutY(50);
         hit.setVisible(false);
         stand.setVisible(false);
         currentState = PlayGame.PlayerState.WAIT;
